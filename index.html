@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SpiderTask2</title>
+
+        <link rel="stylesheet" href="style.css">
+        <script defer src="./js/script.js" type="module"></script>
+        <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+    </head>
+    <body style="position: relative">
+        <canvas>
+            
+        </canvas>
+        <div class="score-board">
+            <h1 id="game-score">0</h1>
+            <p  class='points'>current score</p>
+            <div class="game-info">
+                <p>critical hits: <span class="info" id="critic-hits">0</span> </p>
+                <p>Bonus Scores: <span class="info" id="bonus">0</span> </p>
+            </div>
+            <div class="game-info">
+                <p>Time survived: <span class="info" id="time-survived">0s</span> </p>
+                <p>High score: <span class="info" id="high-score">0</span> </p>
+            </div>
+            <button id="start">Start again</button>
+        </div>
+
+
+        <div id="score">Score: 0</div>
+        <span id="critical">Critical hit!</span>
+
+        <div class="timer">
+            <span class="iconify" data-icon="fluent:timer-20-filled" data-inline="false"></span>
+            <span id=time>0s</span>
+        </div>
+
+        <!-- images -->
+        <img style="display: none;" src="images/spaceship.png" id="spaceship" alt="spaceship">
+        <img style="display: none;" src="images/alien.png" id="alien" alt="alien">
+        <img style="display: none;" src="images/DoubleAlien.png" id="doublingAlien" alt="doublingAlien">
+        <img style="display: none;" src="images/shootingAlien.png" id="shootingAlien" alt="shootingAlien">
+        <img style="display: none;" src="images/bossAlien.png" id="bossAlien" alt="bossAlien">
+        <img style="display: none;" src="images/hut.png" id="hut" alt="hut">
+        <img style="display: none;" src="images/battleship.png" id="battleship" alt="battleship">
+
+    </body>
+</html>
