@@ -2,12 +2,14 @@
 This is space shooter game where player is able to move in all 4 dirctions and able to shoot wherever in the screen.
 
    Normal Mode:
+   
       -> In normal mode only on kind of enemy is there and player can kill it in one shot.
       -> Enemies come sooner and move faster as time proceeds.
       -> For each levelUp bonus score will be given to the player.
       -> On hitting enemy game gets over.
       
    HackerMode:
+   
       -> In hackermode 4 types of enemy are there NORMAL, DOUBLING, HEALING and BOSS.
       -> NORMAL enemy does not have anything special.
       -> DOUBLING enemy splits into two normal enemy if it gets killed.
