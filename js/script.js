@@ -39,6 +39,16 @@ const criticHitsDisplay = document.querySelector('#critic-hits');
 let bonusPoints = 0;
 const bonus = document.querySelector('#bonus');
 
+
+// enemies kill count
+let enemiesKilled = 0;
+let enemiesKilledSpan = document.querySelector('#enemies');
+let DoublingEnemyKilled = 0;
+let DoublingEnemyKilledSpan = document.querySelector('#doubling-enemy');
+let HealingEnemyKilled = 0;
+let HealingEnemyKilledSpan = document.querySelector('#healing-enemy');
+let BossEnemyKilled = 0;
+let BossEnemyKilledSpan = document.querySelector('#boss-enemy');
 // to display time survived
 const timeSurvived = document.querySelector('#time-survived');
 
@@ -105,6 +115,10 @@ function reset() {
     gameScore = 0;
     cricalhits = 0;
     bonusPoints = 0;
+    enemiesKilled = 0;
+    DoublingEnemyKilled = 0;
+    HealingEnemyKilled = 0;
+    BossEnemyKilled = 0;
 
     // resetting timer and bonus tokens
     seconds = 0;
@@ -416,7 +430,11 @@ function levelUp() {
 // to handle enemies once we kill them
 function enemyKill(enemy, index) {
     if (enemy.hitpoints <= 0) {
+
         if (enemy.type === 'doubling') {
+
+            DoublingEnemyKilled++;
+
             gameScore += 40;
             setTimeout(() => {
                 ourEnemies.splice(index, 1);
@@ -425,13 +443,23 @@ function enemyKill(enemy, index) {
             ourEnemies.push(new Utils.Enemy(enemy.posX - 70, enemy.posY, 60, enemy.velocity, 200, 'base'));
             ourEnemies.push(new Utils.Enemy(enemy.posX + 70, enemy.posY, 60, enemy.velocity, 200, 'base'));
 
-        }else if (enemy.type === 'base') {
+
+        }
+        
+        else if (enemy.type === 'base') {
+
+            enemiesKilled++;
+
             gameScore += 10
             setTimeout(() => {
                 ourEnemies.splice(index, 1);
             }, 0);
         }
+
         else if (enemy.type === 'healing') {
+
+            HealingEnemyKilled++;
+
             gameScore += 30;
             setTimeout(() => {
                 ourEnemies.splice(index, 1);
@@ -439,6 +467,7 @@ function enemyKill(enemy, index) {
         }
 
         else if(enemy.type === 'boss') {
+            BossEnemyKilled++;
             clearInterval(MainInterval);
 
             gameScore += 1500
@@ -693,6 +722,11 @@ function update() {
             }
 
             highScoreDisplay.innerHTML = highScore;
+
+            enemiesKilledSpan.innerHTML = enemiesKilled;
+            DoublingEnemyKilledSpan.innerHTML = DoublingEnemyKilled;
+            HealingEnemyKilledSpan.innerHTML = HealingEnemyKilled;
+            BossEnemyKilledSpan.innerHTML = BossEnemyKilled
 
             // clearing all intervals
             clearInterval(timeInterval);
