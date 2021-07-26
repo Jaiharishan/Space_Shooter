@@ -31,21 +31,23 @@ const scoreBoard = document.querySelector('.score-board');
 // all info inside scoreboard
 const gameScoreDisplay = document.querySelector('#game-score');
 
+// to display critical hits
 let cricalhits = 0;
 const criticHitsDisplay = document.querySelector('#critic-hits');
 
+// to display bonus points
 let bonusPoints = 0;
 const bonus = document.querySelector('#bonus');
 
+// to display time survived
 const timeSurvived = document.querySelector('#time-survived');
 
+// to display high score
 let highScore = 0;
 const highScoreDisplay = document.querySelector('#high-score');
 
-
 // game start btn
 const startGameBtn = document.querySelector('#start');
-
 
 // gameover to store requestanimateframe
 let gameOver;
@@ -54,6 +56,8 @@ let gameOver;
 // creating a player instance
 let player = new Utils.Player(canvasWidth/2 - 32, canvasHeight/2 + 100, 64, 8, 0, 0, 'normal');
 
+
+// ALL ARRAYS GOES HERE
 
 // for all enemies
 let ourEnemies = [];
@@ -116,13 +120,17 @@ function reset() {
     // resetting abilities
     ability1 = ability2 = ability3 = ability4 = false;
 
+    // pass for the ability to be accessed only once
     pass1 = pass2 = pass3 = pass4 = true;
+
+    // access to summon enemies after defeating boss
+    access = true;
 
     // resetting time dependent functions
     timeInterval = runTime();
 
+    // setting score to 0
     scoreDiv.innerHTML = 'Score: ' +gameScore;
-
 
 }
 
@@ -131,23 +139,23 @@ function reset() {
 function spawnEnemies(timegap, speed, posX, posY) {
     return setInterval(() => {
 
-        // here we need to randomize with weights
-        // so we get more easy enemies than tough enemies
+        // here we need to randomize with probabilities so we get more easy enemies than tough enemies
+
+        // normal enemy
         if (Math.random() < 0.6) {
             ourEnemies.push(new Utils.Enemy(posX, posY, 60, {x: speed, y: 0}, 200, 'base'));
 
         }else {
+            // healing enemy
             if (Math.random() < 0.6) {
-                console.log('shooter');
-                let shooter = new Utils.HealingEnemy(posX, posY, 60, {x:speed, y: 0}, 400, 'healing');
-                ourEnemies.push(shooter);
+                ourEnemies.push(new Utils.HealingEnemy(posX, posY, 60, {x:speed, y: 0}, 400, 'healing'));
 
+            // doubling enemy
             }else {
                 ourEnemies.push(new Utils.DoublingEnemy(posX, posY, 60, {x: speed, y:0}, 600, 'doubling'));
 
             }
         }
-        
     }, timegap);
 
 }
@@ -167,19 +175,22 @@ function runTime() {
     return setInterval(()=> {
         timeSpan.innerHTML = seconds + 's';
         seconds++
-
         // to add difficulty as time passes
         levelUp();
     },1000)
 }
 
 
-
 // ABILTIES
 
+// pass to ensure the condition runs only once
 let pass1, pass2, pass3, pass4;
+
+// to ensure ability is ready and we can use them
 let ability1, ability2, ability3, ability4;
 
+
+// ABILTY FUNCTIONS GOES HERE
 
 // ability1
 function summonShips() {
@@ -229,9 +240,18 @@ function arealDestruction() {
 
 
 // ability3
-function GenerateBombs(vel) {
+function GenerateBombs() {
     if (ability3) {
-        bombs.push(new Utils.GrenadeBomb(player.posX + player.size/2, player.posY + player.size/2, 20, vel, 1000, 120));
+
+        let size = 20;
+        let speed = -7;
+        if (player.status === 'rage') {
+            size = 30;
+            speed = -12
+        }
+
+        
+        bombs.push(new Utils.GrenadeBomb(player.posX + player.size/2, player.posY + player.size/2, size, {x:0, y: speed}, 1000, 120));
 
         ability3 = false;
 
@@ -241,8 +261,8 @@ function GenerateBombs(vel) {
     }
 }
 
+
 // ability4
-// rage mode
 function rageMode() {
     if (ability4) {
         ability4 = false;
@@ -268,6 +288,8 @@ function rageMode() {
         setTimeout(() => ability4 = true, 15000);
     }
 }
+
+
 
 // tokens to ensure than the condition executes only once
 let token0, token1, token2, token3, token4;
@@ -353,25 +375,27 @@ function levelUp() {
 
     // to make boss level every 100 seconds
     if (seconds % 100 == 0) {
-        console.log('level ok!');
 
+        // to remove all enemy for the boss level
         setTimeout(() => {
             ourEnemies = [];
         }, 0)
 
         setTimeout(() => {
-            let boss = new Utils.BossEnemy(25, 100, 256, {x:0.5, y: 0}, 7000, 'boss');
+            let boss = new Utils.BossEnemy(25, 100, 256, {x: 0.5, y: 0}, 7000, 'boss');
 
             setInterval( () => {
-                if (boss.hitpoints > 0 && boss.hitpoints < 7000) {
+                if (boss.hitpoints > 0 && boss.hitpoints <= 6000) {
                     boss.hitpoints += 1000;
+                }
+                if (boss.hitpoints < 1000) {
+                    boss.velocity = {x: 2, y: 0};
                 }
             }, 5000);
 
             ourEnemies.push(boss);
             access = true;
-
-
+            
             let hut = new Utils.Hut(canvasWidth/6, 100, 60, 10000,  1500);
             let hut2 = new Utils.Hut(canvasWidth - canvasWidth/6, 100, 60, 10000,  1500);
 
@@ -383,19 +407,14 @@ function levelUp() {
 
 
             if (interval4 !== undefined) {
-                console.log(' interval4 ok');
                 clearInterval(interval4);
-                
             }
         }, 500)
-        
     }
-
-    
-
 }
 
 
+// to handle enemies once we kill them
 function enemyKill(enemy, index) {
     if (enemy.hitpoints <= 0) {
         if (enemy.type === 'doubling') {
@@ -443,16 +462,22 @@ function enemyKill(enemy, index) {
 }
 
 
-// this is the main function
+
+
+// THIS IS MAIN FUNCTION WHICH RUNS FOR EVERY SINGLE FRAME
 function update() {
    
     // to clear the screen for every frame
     Utils.clearScreen();
+
+    // to handle animation
     gameOver = requestAnimationFrame(update);
 
+    // to draw the player
     player.drawPlayer();
 
-    player.move();
+    // to move the player
+    player.movePos();
 
 
     // huts draw
@@ -461,12 +486,16 @@ function update() {
     })
 
 
-    // for summon ability
+    // to draw summon ships
     summons.forEach((summon, index) => {
         summon.draw();
     })
 
+
+
+    // to display and function bomb
     bombs.forEach((bomb, bombIndex) => {
+
         bomb.move();
 
         // removing unused projectiles when it moves outside the canvas
@@ -476,11 +505,11 @@ function update() {
                 bombs.splice(bombIndex, 1);
             }, 0)
         }    
-
     })
 
     // for area damage ability
     areaDamages.forEach(areaDamage => {
+
         areaDamage.draw(player.posX + player.size/2, player.posY + player.size/2);
 
         ourEnemies.forEach((enemy, index) => {
@@ -497,17 +526,15 @@ function update() {
                     }, 200)
                 }
     
-    
                 enemyKill(enemy, index);
             }
 
-            
         })
-
-        
     })
 
 
+
+    // to display projectiles
     projectiles.forEach((projectile, index) => {
         projectile.move();
 
@@ -521,12 +548,26 @@ function update() {
 
         
     })
+
+
+
+    // to display explosion particles
+    explosions.forEach((explosion, index) => {
+        explosion.move();
+    
+        if (explosion.alpha < 0) {
+            explosions.splice(index, 1);
+        }
+    })
     
 
+
+    // to diplay and functioning of all enemies
     ourEnemies.forEach((enemy, index) => {
         enemy.move();
 
-        // for detecting bullet
+
+        // to detecting bullets
         projectiles.forEach((projectile, projindex) => {
             let dist = Math.hypot(projectile.posX - enemy.posX - enemy.size/2, projectile.posY - enemy.posY - enemy.size/2);
             
@@ -597,8 +638,8 @@ function update() {
         })
 
 
+        // to detect bombs
         bombs.forEach((bomb, bombIndex) => {
-
 
             let dist = Math.hypot(bomb.posX - enemy.posX - enemy.size/2, bomb.posY - enemy.posY - enemy.size/2);
 
@@ -638,15 +679,14 @@ function update() {
 
 
 
-        // for the shooting enemy
-
         // for player and enemies collision and gameover
         let dist = Math.hypot(enemy.posX + enemy.size/2 - player.posX - player.size/2, enemy.posY + enemy.size/2 - player.posY -player.size/2);
 
         if(dist < (enemy.size + player.size)/2 && player.status === 'normal') {
-            // console.log(dist);
             
+            // to stop animation
             cancelAnimationFrame(gameOver);
+
 
             // updating info
             gameScoreDisplay.innerHTML = gameScore;
@@ -661,6 +701,7 @@ function update() {
 
             highScoreDisplay.innerHTML = highScore;
 
+            // clearing all intervals
             clearInterval(timeInterval);
             clearInterval(interval0);
             clearInterval(interval1);
@@ -669,37 +710,26 @@ function update() {
             clearInterval(interval4);
 
             // adding sound
-            
-
-            // adding soun
-            
+    
             Utils.makeSound(Utils.addSound('audios/391539__mativve__electro-win-sound.wav', 'win'));
 
+
+            // to diplay scoreboard
             scoreBoard.style.display = 'flex';   
         }
     })
 
 
-
-    explosions.forEach((explosion, index) => {
-        explosion.move();
-
-        if (explosion.alpha < 0) {
-            explosions.splice(index, 1);
-        }
-    })
-
-
-
+    // to show score
     scoreDiv.innerHTML = 'Score: ' + gameScore;
     
 }
 
 
 // ALL EVENT LISTENERS GOES HERE
+
+
 // key board events
-
-
 document.addEventListener('keydown', (e) => {
     console.log(e.key);
     if(e.key === 'ArrowUp' || e.key === 'Up' || e.key === 'w') {
@@ -719,22 +749,22 @@ document.addEventListener('keydown', (e) => {
     // ability activations
 
     // ability1 -- to summon batleships
-    if(e.key === 'b') {
+    if(e.key === 'b' || e.key === 'B') {
         summonShips();
     }
 
     // ability2 -- radial damage circle
-    if (e.key === 'c') {
+    if (e.key === 'c' || e.key === 'C') {
         arealDestruction();
     }
 
     // ability3 -- destruction bomb
     if (e.key === ' ') {
-        GenerateBombs({x:0, y:-7});
+        GenerateBombs();
     }
 
     // ability4 -- rage mode
-    if (e.key === 'r') {
+    if (e.key === 'r' || e.key === 'R') {
         rageMode();
     }
 
@@ -755,10 +785,12 @@ document.addEventListener('keyup', (e) => {
 // click events
 document.addEventListener('click', (e) => {
 
-    // for projectie
+    // for get the projection angle
     const angle = Math.atan2(e.clientY - player.posY - player.size/2 , e.clientX - player.posX - player.size/2);
 
     let speed = 15
+
+    // x and y velocity of the projectile
     const velocity = {
         x: speed * Math.cos(angle),
         y: speed * Math.sin(angle)
@@ -766,29 +798,30 @@ document.addEventListener('click', (e) => {
 
     let size = 6;
     let damage = 100;
+
+    // changing stats if player is in rage mode
     if (player.status === 'rage') {
         size = 12;
         damage = 300;
         speed = 20;
-
     }
 
+    // creating projectile
     projectiles.push(new Utils.Projectile(player.posX + player.size/2, player.posY + player.size/2, size, velocity, damage));
 
 
     // adding sound
     Utils.makeSound(Utils.addSound('audios/348163__djfroyd__laser-one-shot-2.wav', 'bullet'));
-
-
 })
 
 
-// event listener for the start button
+// EVENT LISTENER FOR START BTN
 startGameBtn.addEventListener('click', () => {
     scoreBoard.style.display = 'none';
 
     // to reset all the values
     reset();
+
     // to start rendering the screen
     update();
 

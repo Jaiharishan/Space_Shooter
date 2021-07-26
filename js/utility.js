@@ -74,7 +74,7 @@ class Player {
         }
     }
 
-    move() {
+    movePos() {
         this.posX += this.dx;
         this.posY += this.dy;
 
@@ -311,18 +311,17 @@ class Enemy {
 }
 
 
-
+// CLASS FOR DOUBLING ENEMY
 class DoublingEnemy extends Enemy {
 
     draw() {
         ctx.drawImage(doublingAlien, this.posX, this.posY, this.size, this.size);
         this.healthBar();
     }
-
 }
 
 
-
+// CLASS FOR HEALING ENEMY
 class HealingEnemy extends Enemy {
     draw() {
         ctx.drawImage(shootingAlien, this.posX, this.posY, this.size, this.size);
@@ -338,7 +337,7 @@ class HealingEnemy extends Enemy {
 }
 
 
-
+// FOR THE BOSS ENEMY
 class BossEnemy extends Enemy {
     draw() {       
         ctx.drawImage(bossAlien, this.posX, this.posY, this.size, this.size);
@@ -347,6 +346,7 @@ class BossEnemy extends Enemy {
     }
 }
 
+// FOR THE SPAWN HUT
 class Hut {
     constructor(posX, posY, size, duration, spawnSpeed) {
         this.posX = posX;
@@ -358,14 +358,13 @@ class Hut {
 
     draw() {
         ctx.drawImage(spawnHut, this.posX, this.posY, this.size, this.size);
-
-
-
     }
 }
 
 
 // FUNCTIONS
+
+
 // for adding audio
 function addSound(src, id) {
     let sound = document.createElement('audio');
