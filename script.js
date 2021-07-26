@@ -52,6 +52,36 @@ const highScoreDisplay = document.querySelector('#high-score');
 const startGameBtn = document.querySelector('#start');
 
 
+// tokens to ensure than the condition executes only once
+let token0, token1, token2, token3, token4;
+token0 = token1 = token2 = token3 = token4 = false;
+
+// interval to clear as we get to another level
+let interval0, interval1, interval2, interval3, interval4; 
+
+// to slow down the speed of explosion
+const friction = 0.99;
+
+
+// ALL ARRAYS
+
+// for all enemies
+let ourEnemies = [];
+
+// for all the bullets
+let projectiles = [];
+
+// for explosions
+let explosions = [];
+
+
+// to store the interval
+let timeInterval;
+
+// as it takes 1s to run the function firsttime we start with 1
+let seconds = 1;
+
+
 
 // ALL CLASSES GOES HERE
 
@@ -68,6 +98,30 @@ class Player {
 
     drawPlayer() {
         ctx.drawImage(spaceship, this.posX, this.posY, this.size, this.size);
+    }
+
+    // detecting collision for player
+    detectCollision() {
+        if (this.posX  < 0) {
+            this.posX = 0;
+        }
+        if (this.posX + this.size > canvasWidth) {
+            this.posX = canvasWidth - this.size;
+        }
+        if (this.posY + this.size > canvasHeight) {
+            this.posY = canvasHeight - this.size;
+        }
+        if(this.posY < 0) {
+            this.posY = 0;
+        }
+    }
+
+
+// movement of player
+    movePos() {
+        this.posX += this.dx;
+        this.posY += this.dy;
+        this.detectCollision();
     }
 }
 
@@ -94,10 +148,6 @@ class Projectile {
         this.posY = this.posY + this.velocity.y;
     }
 }
-
-
-// to slow down the speed of explosion
-const friction = 0.99
 
 
 // for explosion
@@ -172,25 +222,11 @@ class Enemy {
 let player = new Player(canvasWidth/2 - 32, canvasHeight/2 + 100, 64, 8, 0, 0);
 
 
-// for all enemies
-let ourEnemies = [];
-
-// for all the bullets
-let projectiles = [];
-
-// for explosions
-let explosions = [];
-
-
 
 // ALL FUNCTIONS GOES HERE
 
-// to store the interval
 
-let timeInterval;
-
-// reseting the game
-// we reset all the variable to its inital state
+// we reset all the variable to its inital state when starting a new game
 function reset() {
     player = new Player(canvasWidth/2 - 32, canvasHeight/2 + 100, 64, 8, 0, 0);
 
@@ -220,33 +256,6 @@ function reset() {
 }
 
 
-// detecting collision for player
-function detectCollision() {
-    if (player.posX  < 0) {
-        player.posX = 0;
-    }
-    if (player.posX + player.size > canvasWidth) {
-        player.posX = canvasWidth - player.size;
-    }
-    if (player.posY + player.size > canvasHeight) {
-        player.posY = canvasHeight - player.size;
-    }
-    if(player.posY < 0) {
-        player.posY = 0;
-    }
-}
-
-
-// movement of player
-function movePos() {
-    player.posX += player.dx;
-    player.posY += player.dy;
-
-    detectCollision();
-    
-}
-
-let num = 0;
 // to spawm enemies continously with certain speed and timegap
 function spawnEnemies(timegap, speed) {
     return setInterval(() => {
@@ -264,9 +273,6 @@ function displayCritical() {
 }
 
 
-// as it takes 1s to run the function firsttime we start with 1
-let seconds = 1;
-
 
 // for running time
 function runTime() {
@@ -278,15 +284,6 @@ function runTime() {
         levelUp();
     },1000)
 }
-
-// timeInterval = runTime();
-
-// tokens to ensure than the condition executes only once
-let token0, token1, token2, token3, token4;
-token0 = token1 = token2 = token3 = token4 = false;
-
-// interval to clear as we get to another level
-let interval0, interval1, interval2, interval3, interval4; 
 
 
 
@@ -340,7 +337,8 @@ function levelUp() {
 }
 
 
-// for adding and managing audio
+// MANAGING AUDIO
+// for adding audio
 function addSound(src, id) {
     let sound = document.createElement('audio');
     sound.setAttribute('autoplay', 'true');
@@ -352,6 +350,8 @@ function addSound(src, id) {
     return sound;
 }
 
+
+// for playing audio
 function makeSound(sound) {
     let soundId = "#" + sound.id
     let allSounds = document.querySelectorAll(soundId);
@@ -374,22 +374,29 @@ function clearScreen() {
 }
 
 
+// GAME OVER VARIABLE TO CONTROL ANAIMATION FRAMES
 let gameOver;
 
 
-// this is the main function
+
+// THE MAIN FUNCTION WHICH RUNS AGAIN AND AGAIN
 function update() {
    
     // to clear the screen for every frame
     clearScreen();
 
+    // storing animation to a variable so we can change it later
     gameOver = requestAnimationFrame(update);
 
+    // to draw the player
     player.drawPlayer();
 
-    movePos();
+    // to move the player
+    player.movePos();
 
 
+
+    // rendering projectiles
     projectiles.forEach((projectile, index) => {
         projectile.move();
 
@@ -403,6 +410,7 @@ function update() {
     })
     
 
+    // rendering enemies
     ourEnemies.forEach((enemy, index) => {
         enemy.move();
 
@@ -412,7 +420,7 @@ function update() {
             
 
             // normal hit
-            if(dist < enemy.size/2 + projectile.size) {
+            if(dist < enemy.size/2 + projectile.size && dist > enemy.size/3 + projectile.size) {
 
                 gameScore += 5
 
@@ -461,12 +469,12 @@ function update() {
         })
 
 
-        // game over condition
-        // for player and enemies collision
+        // game over if player and enemies collide
         let dist = Math.hypot(enemy.posX + enemy.size/2 - player.posX - player.size/2, enemy.posY + enemy.size/2 - player.posY -player.size/2);
 
         if(dist < (enemy.size + player.size)/2) {
             
+            // to stop rendering again and again
             cancelAnimationFrame(gameOver);
 
             // updating info
@@ -482,6 +490,7 @@ function update() {
 
             highScoreDisplay.innerHTML = highScore;
 
+            // clearing all intervals as game ends
             clearInterval(timeInterval);
             clearInterval(interval0);
             clearInterval(interval1);
@@ -490,16 +499,15 @@ function update() {
             clearInterval(interval4);
 
             // adding sound
-            
-
-            // adding sound
             makeSound(addSound('audios/391539__mativve__electro-win-sound.wav', 'win'));
 
+            // making it display again
             scoreBoard.style.display = 'flex';   
         }
     })
 
 
+    // for rendering explosion particles
     explosions.forEach((explosion, index) => {
         explosion.move();
 
@@ -509,16 +517,15 @@ function update() {
     })
 
 
-    scoreDiv.innerHTML = 'Score: ' + gameScore;
-    
-   
+    // displaying score
+    scoreDiv.innerHTML = 'Score: ' + gameScore;   
 }
 
 
 // ALL EVENT LISTENERS GOES HERE
+
+
 // key board events
-
-
 document.addEventListener('keydown', (e) => {
     if(e.key === 'ArrowUp' || e.key === 'Up' || e.key === 'w') {
         player.dy = -player.speed
@@ -546,6 +553,7 @@ document.addEventListener('keyup', (e) => {
 });
 
 
+// click events
 document.addEventListener('click', (e) => {
     const angle = Math.atan2(e.clientY - player.posY - player.size/2 , e.clientX - player.posX - player.size/2);
 
@@ -562,7 +570,8 @@ document.addEventListener('click', (e) => {
 })
 
 
-// event listener for the start button
+
+// EVENT LISTENER FOR START BTN
 startGameBtn.addEventListener('click', () => {
     scoreBoard.style.display = 'none';
 
@@ -570,6 +579,4 @@ startGameBtn.addEventListener('click', () => {
     reset();
     // to start rendering the screen
     update();
-
-    num++;
 })
