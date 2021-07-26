@@ -77,8 +77,6 @@ let areaDamages = [];
 // for bomb
 let bombs = [];
 
-// hut
-let huts = [];
 
 // to store the interval
 let timeInterval;
@@ -102,7 +100,6 @@ function reset() {
     summons = [];
     areaDamages = [];
     bombs = [];
-    huts = [];
 
     // resetting score and critcal hit count
     gameScore = 0;
@@ -223,7 +220,12 @@ function summonShips() {
 // ability2
 function arealDestruction() {
     if (ability2) {
-        areaDamages.push(new Utils.AreaDamage(player.posX + player.size/2, player.posY + player.size/2, 250, 3));
+        let impactRadius = 250;
+
+        if (player.status === 'rage') {
+            impactRadius = 400;
+        }
+        areaDamages.push(new Utils.AreaDamage(player.posX + player.size/2, player.posY + player.size/2, impactRadius, 3));
         
         ability2 = false;
 
@@ -297,7 +299,7 @@ let token0, token1, token2, token3, token4;
 // interval to clear as we get to another level
 let interval0, interval1, interval2, interval3, interval4; 
 
-let ourInterval1, ourInterval2;
+let MainInterval;
 
 let access = true;
 
@@ -307,7 +309,7 @@ function levelUp() {
     // primary level
     if(seconds < 25 && !token0) {
         token0 = true;
-        interval0 = spawnEnemies(1500, 3, 1, 50);
+        interval0 = spawnEnemies(1500, 3, 15, 50);
     }
 
     // medium level
@@ -317,7 +319,7 @@ function levelUp() {
         token1 = true;
 
         clearInterval(interval0)
-        interval1 = spawnEnemies(1200, 4, 1, 50);
+        interval1 = spawnEnemies(1200, 4, 15, 50);
     }
 
     // hard level
@@ -327,7 +329,7 @@ function levelUp() {
         token2 = true;
 
         clearInterval(interval1);
-        interval2 = spawnEnemies(1000, 4, 1, 50);
+        interval2 = spawnEnemies(1000, 4, 15, 50);
     }
 
     // expert level
@@ -337,7 +339,7 @@ function levelUp() {
         token3 = true
 
         clearInterval(interval2);
-        interval3 = spawnEnemies(800, 5, 1, 50); 
+        interval3 = spawnEnemies(800, 5, 15, 50); 
     }
 
     // god level
@@ -388,23 +390,20 @@ function levelUp() {
                 if (boss.hitpoints > 0 && boss.hitpoints <= 6000) {
                     boss.hitpoints += 1000;
                 }
-                if (boss.hitpoints < 1000) {
-                    boss.velocity = {x: 2, y: 0};
-                }
             }, 5000);
 
             ourEnemies.push(boss);
             access = true;
             
-            let hut = new Utils.Hut(canvasWidth/6, 100, 60, 10000,  1500);
-            let hut2 = new Utils.Hut(canvasWidth - canvasWidth/6, 100, 60, 10000,  1500);
+            MainInterval = setInterval(() => {
 
-            huts.push(hut);
-            huts.push(hut2);
+                let posX = boss.posX + boss.size/2;
+                let posY = boss.posY + boss.size/2;
 
-            ourInterval1 = spawnEnemies(1500, 2, hut.posX + hut.size/2, hut.posY + hut.size/2);
-            ourInterval2 = spawnEnemies(1500, 2, hut2.posX + hut2.size/2, hut2.posY + hut2.size/2);
-
+                ourEnemies.push(new Utils.DoublingEnemy(posX, posY, 60, {x: 3, y:0}, 600, 'doubling'));
+                ourEnemies.push(new Utils.HealingEnemy(posX + 100, posY, 60, {x: 3, y:0}, 400, 'healing'));
+            }, 3000)
+            
 
             if (interval4 !== undefined) {
                 clearInterval(interval4);
@@ -440,20 +439,17 @@ function enemyKill(enemy, index) {
         }
 
         else if(enemy.type === 'boss') {
-
-            clearInterval(ourInterval1);
-            clearInterval(ourInterval2);
+            clearInterval(MainInterval);
 
             gameScore += 1500
             setTimeout(() => {
                 ourEnemies.splice(index, 1);
                 ourEnemies = [];
-                huts = [];
             }, 0);
 
             // only once token
             if (access) {
-                interval4 = spawnEnemies(700, 6, 1, 50);
+                interval4 = spawnEnemies(700, 6, 15, 50);
                 access = false;
             }
             
@@ -480,10 +476,6 @@ function update() {
     player.movePos();
 
 
-    // huts draw
-    huts.forEach(hut => {
-        hut.draw();
-    })
 
 
     // to draw summon ships
@@ -682,7 +674,8 @@ function update() {
         // for player and enemies collision and gameover
         let dist = Math.hypot(enemy.posX + enemy.size/2 - player.posX - player.size/2, enemy.posY + enemy.size/2 - player.posY -player.size/2);
 
-        if(dist < (enemy.size + player.size)/2 && player.status === 'normal') {
+        if((dist < (enemy.size + player.size)/2 && player.status === 'normal')
+         || enemy.posY + enemy.size > canvasHeight) {
             
             // to stop animation
             cancelAnimationFrame(gameOver);

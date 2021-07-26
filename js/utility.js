@@ -298,14 +298,16 @@ class Enemy {
         this.posX = this.posX +  this.velocity.x;
         this.posY = this.posY + this.velocity.y;
 
-        if (this.posX < 0) {
-            this.posY += this.size + 15;
+        if (this.posX < 10) {
             this.velocity.x *= -1;
+            this.posY += this.size + 15;
+            
         }
 
-        if(this.posX + this.size > canvasWidth) {
-            this.posY += this.size + 15;
+        if(this.posX + this.size > canvasWidth - 10) {
             this.velocity.x *= -1;
+            this.posY += this.size + 15;
+            
         }
     }
 }
@@ -343,21 +345,6 @@ class BossEnemy extends Enemy {
         ctx.drawImage(bossAlien, this.posX, this.posY, this.size, this.size);
         this.healthBar();
         
-    }
-}
-
-// FOR THE SPAWN HUT
-class Hut {
-    constructor(posX, posY, size, duration, spawnSpeed) {
-        this.posX = posX;
-        this.posY = posY;
-        this.size = size;
-        this.duration = duration;
-        this.spawnSpeed = this.spawnSpeed;
-    }
-
-    draw() {
-        ctx.drawImage(spawnHut, this.posX, this.posY, this.size, this.size);
     }
 }
 
@@ -402,4 +389,4 @@ function clearScreen() {
 
 
 // exporting all classes and function
-export {Player, BattleShip, AreaDamage, GrenadeBomb,  Projectile, Explosion, Enemy, DoublingEnemy, HealingEnemy as HealingEnemy, BossEnemy, Hut, addSound, makeSound, clearScreen};
+export {Player, BattleShip, AreaDamage, GrenadeBomb,  Projectile, Explosion, Enemy, DoublingEnemy, HealingEnemy as HealingEnemy, BossEnemy, addSound, makeSound, clearScreen};
