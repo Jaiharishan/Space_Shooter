@@ -258,20 +258,21 @@ class Enemy {
         let totalHitpoints
         if (this.type === 'base') {
             totalHitpoints = 200;
+
         }
         else if (this.type === 'doubling') {
             totalHitpoints = 600;
         }
         else if (this.type === 'healing') {
             totalHitpoints = 400;
+
         }
         else if (this.type === 'boss') {
             totalHitpoints = 7000;
         }
 
         let health = (this.hitpoints/totalHitpoints) * this.size;
-
-        
+       
         
         if (this.hitpoints >= 0) {
             // green bar

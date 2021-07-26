@@ -724,7 +724,7 @@ function update() {
 
 // key board events
 document.addEventListener('keydown', (e) => {
-    console.log(e.key);
+
     if(e.key === 'ArrowUp' || e.key === 'Up' || e.key === 'w') {
         player.dy = -player.speed
 
