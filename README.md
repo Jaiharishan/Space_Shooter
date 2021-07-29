@@ -4,8 +4,9 @@ This is space shooter game where player is able to move in all 4 dirctions and a
    Normal Mode:
    
       -> In normal mode only on kind of enemy is there and player can kill it in one shot.
+      -> A level increases For every 25s.
       -> Enemies come sooner and move faster as time proceeds.
-      -> For each levelUp bonus score will be given to the player.
+      -> For each levelUp bonus score will be given to the player. 
       -> On hitting enemy game gets over.
       
    HackerMode:
@@ -16,6 +17,7 @@ This is space shooter game where player is able to move in all 4 dirctions and a
       -> HEALING enemy heals half of the damage recieved.
       -> BOSS enemy appears in a special round it is big and have a lot of hitpoints and tough enemies are summoned from it.
       -> Killing different enemies give different scores.
+      -> After every 100s a boss enemy appears.
       
       -> Also on scoring certain scores abilities are unlocked there are 4 abilities.
       -> ABILITY1 - Summoning two spaceships to assist the player.
