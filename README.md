@@ -25,8 +25,8 @@ This is space shooter game where player is able to move in all 4 dirctions and a
       -> ABILITY3 - A bomb which blasts off continously and never stops.
       -> ABILITY4 - RAGE MODE it boosts all the player stats as well as abilities.
       
-      -> To use ABILITY1 press B unlocks after scoring 250
-      -> To use ABILITY2 press C unlocks after scoring 750
-      -> To use ABILITY3 press SPACEBAR after scoring 1500
-      -> To use ABILITY4 press R after scoring 2500
+      -> To use ABILITY1 press B unlocks after scoring 250 and can be used after every 10s
+      -> To use ABILITY2 press C unlocks after scoring 750 can be used after every 12s
+      -> To use ABILITY3 press SPACEBAR after scoring 1500 can be used after every 5s
+      -> To use ABILITY4 press R after scoring 2500 can be used after every 15s
       
